@@ -399,10 +399,21 @@ namespace NvimEditor
         // Allow for OSX to put the app front and center, even when it is already running
         static void ActivateOSXApp(string clientCmd)
         {
+            if (string.IsNullOrEmpty(clientCmd))
+            {
+                return;
+            }
+
             // clientCmd is the CLI binary path (e.g. /opt/homebrew/bin/neovide).
             // LaunchServices/AppleScript activation needs the app bundle name, not the binary path.
             var appName = Path.GetFileNameWithoutExtension(clientCmd);
+            if (string.IsNullOrEmpty(appName))
+            {
+                return;
+            }
+
             appName = char.ToUpper(appName[0]) + appName.Substring(1); // neovide -> Neovide
+            appName = appName.Replace("\"", "\\\"").Replace("'", "\\'"); // guard against quote injection
 
             var psi = new ProcessStartInfo
             {
