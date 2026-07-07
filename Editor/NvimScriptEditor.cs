@@ -324,7 +324,7 @@ namespace NvimEditor
                         UnityEngine.Debug.LogWarning($"[NvimScriptEditor] Failed to activate {ClientCmd}: {e.Message}");
                     }
                 }
-                else
+                else 
                 {
                     ActivateWindowsApp(process);
                 }
