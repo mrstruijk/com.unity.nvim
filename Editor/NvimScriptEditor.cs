@@ -149,7 +149,8 @@ namespace NvimEditor
         public string ReplaceTemplate(String templateStr, String pipePath, String path, int line, int column)
         {
             templateStr = templateStr.Replace("${pipePath}", pipePath);
-            templateStr = templateStr.Replace("${filePath}", path);
+            // templateStr = templateStr.Replace("${filePath}", path);
+            templateStr = templateStr.Replace("${filePath}", path.Replace(" ", "\\ "));
             templateStr = templateStr.Replace("${line}", Math.Max(line, 1).ToString());
             templateStr = templateStr.Replace("${column}", Math.Max(column, 0).ToString());
             return templateStr;
