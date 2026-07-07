@@ -424,7 +424,15 @@ namespace NvimEditor
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
             };
-            Process.Start(psi);
+            var proc = Process.Start(psi);
+            proc?.ErrorDataReceived += (sender, args) =>
+            {
+                if (!string.IsNullOrEmpty(args.Data))
+                {
+                    UnityEngine.Debug.LogWarning($"[NvimScriptEditor] osascript: {args.Data}");
+                }
+            };
+            proc?.BeginErrorReadLine();
         }
 
         public CodeEditor.Installation[] Installations => installations;
