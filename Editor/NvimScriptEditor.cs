@@ -149,7 +149,6 @@ namespace NvimEditor
         public string ReplaceTemplate(String templateStr, String pipePath, String path, int line, int column)
         {
             templateStr = templateStr.Replace("${pipePath}", pipePath);
-            // templateStr = templateStr.Replace("${filePath}", path);
             templateStr = templateStr.Replace("${filePath}", path.Replace(" ", "\\ "));
             templateStr = templateStr.Replace("${line}", Math.Max(line, 1).ToString());
             templateStr = templateStr.Replace("${column}", Math.Max(column, 0).ToString());
@@ -325,6 +324,10 @@ namespace NvimEditor
                         UnityEngine.Debug.LogWarning($"[NvimScriptEditor] Failed to activate {ClientCmd}: {e.Message}");
                     }
                 }
+                else
+                {
+                    ActivateWindowsApp(process);
+                }
             }
 
             return true;
@@ -394,6 +397,23 @@ namespace NvimEditor
             if (string.IsNullOrEmpty(extension))
                 return false;
             return HandledExtensions.Contains(extension.TrimStart('.'));
+        }
+
+
+#if UNITY_EDITOR_WIN
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern bool SetForegroundWindow(IntPtr hWnd);
+#endif
+
+        // Allow windows to put app front and center
+        static void ActivateWindowsApp(Process process)
+        {
+#if UNITY_EDITOR_WIN
+            if (process != null && process.MainWindowHandle != IntPtr.Zero)
+            {
+                SetForegroundWindow(process.MainWindowHandle);
+            }
+#endif
         }
 
         // Allow for OSX to put the app front and center, even when it is already running
