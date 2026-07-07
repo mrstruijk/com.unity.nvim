@@ -316,7 +316,14 @@ namespace NvimEditor
                 // ForceForegroundWindow(process.MainWindowHandle);
                 if (IsOSX)
                 {
-                    ActivateOSXApp(ClientCmd);
+                    try
+                    {
+                        ActivateOSXApp(ClientCmd);
+                    }
+                    catch (Exception e)
+                    {
+                        UnityEngine.Debug.LogWarning($"[NvimScriptEditor] Failed to activate {ClientCmd}: {e.Message}");
+                    }
                 }
             }
 
