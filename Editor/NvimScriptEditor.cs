@@ -288,7 +288,8 @@ namespace NvimEditor
             };
             Process.Start(nvrStartInfo);
 
-            Process process = Process.GetProcesses().FirstOrDefault(x => x.Id == EditorPid);
+            // Guard agains PID recycling issues (when a PID is reused for another app, then the below still checks that the app getting opened is Neovide, and not something else)
+            Process process = Process.GetProcesses().FirstOrDefault(x => x.Id == EditorPid && x.ProcessName.IndexOf("neovide", StringComparison.OrdinalIgnoreCase) >= 0);
 
             if (process == null || process.HasExited)
             {
