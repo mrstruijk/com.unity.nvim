@@ -324,7 +324,7 @@ namespace NvimEditor
                         UnityEngine.Debug.LogWarning($"[NvimScriptEditor] Failed to activate {ClientCmd}: {e.Message}");
                     }
                 }
-                else 
+                else
                 {
                     ActivateWindowsApp(process);
                 }
@@ -444,15 +444,21 @@ namespace NvimEditor
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
             };
+
             var proc = Process.Start(psi);
-            proc?.ErrorDataReceived += (sender, args) =>
+
+            if (proc != null)
             {
-                if (!string.IsNullOrEmpty(args.Data))
+                proc.ErrorDataReceived += (sender, args) =>
                 {
-                    UnityEngine.Debug.LogWarning($"[NvimScriptEditor] osascript: {args.Data}");
-                }
-            };
-            proc?.BeginErrorReadLine();
+                    if (!string.IsNullOrEmpty(args.Data))
+                    {
+                        UnityEngine.Debug.LogWarning($"[NvimScriptEditor] osascript: {args.Data}");
+                    }
+                };
+
+                proc.BeginErrorReadLine();
+            }
         }
 
         public CodeEditor.Installation[] Installations => installations;
