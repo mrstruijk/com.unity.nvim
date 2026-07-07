@@ -313,6 +313,10 @@ namespace NvimEditor
             else
             {
                 // ForceForegroundWindow(process.MainWindowHandle);
+                if (IsOSX)
+                {
+                    ActivateOSXApp(ClientCmd);
+                }
             }
 
             return true;
@@ -382,6 +386,26 @@ namespace NvimEditor
             if (string.IsNullOrEmpty(extension))
                 return false;
             return HandledExtensions.Contains(extension.TrimStart('.'));
+        }
+
+        // Allow for OSX to put the app front and center, even when it is already running
+        static void ActivateOSXApp(string clientCmd)
+        {
+            // clientCmd is the CLI binary path (e.g. /opt/homebrew/bin/neovide).
+            // LaunchServices/AppleScript activation needs the app bundle name, not the binary path.
+            var appName = Path.GetFileNameWithoutExtension(clientCmd);
+            appName = char.ToUpper(appName[0]) + appName.Substring(1); // neovide -> Neovide
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = "osascript",
+                Arguments = $"-e 'tell application \"{appName}\" to activate'",
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            };
+            Process.Start(psi);
         }
 
         public CodeEditor.Installation[] Installations => installations;
